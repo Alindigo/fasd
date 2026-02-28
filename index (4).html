@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIM Studio — цифровые решения</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;800&family=Golos+Text:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black:    #0a0a0a;
+  --white:    #f5f2ee;
+  --cream:    #e8e3dc;
+  --accent:   #c8f542;
+  --dim:      #888;
+  --border:   rgba(255,255,255,0.07);
+  --serif:    'Unbounded', sans-serif;
+  --sans:     'Golos Text', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: auto;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 1000; opacity: 0.25;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 40px;
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  background: rgba(10,10,10,.75);
+  transition: border-color .3s;
+}
+.logo {
+  font-family: var(--serif); font-size: 17px; font-weight: 800;
+  letter-spacing: -.02em; color: var(--white); text-decoration: none;
+  flex-shrink: 0;
+}
+.logo span { color: var(--accent); }
+
+/* Desktop nav links */
+.nav-links { display: flex; gap: 36px; list-style: none; }
+.nav-links a {
+  font-size: 12px; font-weight: 500; color: var(--dim);
+  text-decoration: none; letter-spacing: .06em; text-transform: uppercase; transition: color .2s;
+}
+.nav-links a:hover { color: var(--white); }
+.nav-cta {
+  background: var(--accent) !important; color: var(--black) !important;
+  padding: 10px 22px; border-radius: 100px;
+  font-weight: 600 !important; letter-spacing: 0 !important;
+  text-transform: none !important; font-size: 13px !important;
+  transition: all .2s !important;
+}
+.nav-cta:hover { background: var(--cream) !important; }
+
+/* ── HAMBURGER ── всегда в DOM, скрыт на десктопе через CSS */
+.nav-burger {
+  display: none; /* скрыт по умолчанию на широких экранах */
+  flex-direction: column; justify-content: center; align-items: center;
+  width: 44px; height: 44px; gap: 6px;
+  background: none; border: 1.5px solid rgba(255,255,255,0.15); border-radius: 12px;
+  cursor: pointer; padding: 0; flex-shrink: 0;
+  transition: border-color .2s, background .2s;
+  position: relative; z-index: 201;
+}
+.nav-burger:hover { border-color: rgba(200,245,66,.5); background: rgba(200,245,66,.05); }
+.nav-burger span {
+  display: block; width: 22px; height: 2px;
+  background: var(--white); border-radius: 2px;
+  transition: transform .35s cubic-bezier(.23,1,.32,1), opacity .25s, width .25s;
+  transform-origin: center;
+}
+.nav-burger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.nav-burger.open span:nth-child(2) { opacity: 0; width: 0; }
+.nav-burger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+/* ── MOBILE MENU ── */
+/* По умолчанию скрыто через visibility+opacity, НЕ display:none */
+.mobile-menu {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(10,10,10,.98);
+  backdrop-filter: blur(30px);
+  z-index: 199;
+  display: flex;
+  flex-direction: column; justify-content: center; align-items: center;
+  gap: 8px;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, visibility .3s;
+}
+.mobile-menu.open {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: all;
+}
+.mobile-menu a {
+  font-family: var(--serif); font-size: clamp(26px, 7vw, 38px); font-weight: 600;
+  color: var(--dim); text-decoration: none; letter-spacing: -.02em;
+  padding: 12px 0; text-align: center;
+  transform: translateY(20px); opacity: 0;
+  transition: color .2s, transform .4s, opacity .4s;
+}
+.mobile-menu.open a { transform: translateY(0); opacity: 1; }
+.mobile-menu.open a:nth-child(1) { transition-delay: .05s; }
+.mobile-menu.open a:nth-child(2) { transition-delay: .10s; }
+.mobile-menu.open a:nth-child(3) { transition-delay: .15s; }
+.mobile-menu.open a:nth-child(4) { transition-delay: .20s; }
+.mobile-menu a:hover { color: var(--white); }
+.mobile-menu .mobile-cta {
+  margin-top: 24px;
+  background: var(--accent) !important;
+  color: var(--black) !important;
+  padding: 14px 36px;
+  border-radius: 100px;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  font-family: var(--sans) !important;
+  letter-spacing: 0 !important;
+  transform: translateY(20px); opacity: 0;
+  transition: background .2s, transform .4s .25s, opacity .4s .25s !important;
+}
+.mobile-menu.open .mobile-cta { transform: translateY(0); opacity: 1; }
+.mobile-menu .mobile-cta:hover { background: var(--cream) !important; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh; padding: 0 48px 80px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  position: relative; overflow: hidden;
+}
+.hero-bg { position: absolute; inset: 0; overflow: hidden; }
+.hero-bg-circle {
+  position: absolute; border-radius: 50%;
+  filter: blur(120px); opacity: .1;
+  animation: drift 14s ease-in-out infinite alternate;
+}
+.hero-bg-circle:nth-child(1) {
+  width: 800px; height: 800px; background: var(--accent);
+  top: -250px; right: -150px;
+}
+.hero-bg-circle:nth-child(2) {
+  width: 550px; height: 550px; background: #4287f5;
+  bottom: -150px; left: -100px; animation-delay: -5s;
+}
+@keyframes drift { from{transform:translate(0,0) scale(1)} to{transform:translate(50px,35px) scale(1.12)} }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid rgba(200,245,66,.3); border-radius: 100px;
+  padding: 6px 16px; font-size: 11px; color: var(--accent);
+  letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: 40px; width: fit-content;
+  opacity: 0; animation: fadeUp .8s .1s forwards;
+}
+.hero-badge::before {
+  content: ''; width: 6px; height: 6px;
+  background: var(--accent); border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.hero-title {
+  font-family: var(--serif);
+  font-size: clamp(52px, 8.5vw, 122px);
+  font-weight: 800; line-height: .9; letter-spacing: -.04em;
+  position: relative; z-index: 1;
+  opacity: 0; animation: fadeUp .9s .3s forwards;
+}
+.hero-title em {
+  font-style: normal; color: transparent;
+  -webkit-text-stroke: 1px rgba(245,242,238,.25);
+}
+
+.hero-bottom {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-top: 64px;
+  opacity: 0; animation: fadeUp .9s .6s forwards;
+}
+.hero-desc { max-width: 380px; font-size: 16px; color: var(--dim); line-height: 1.8; }
+.hero-actions { display: flex; align-items: center; gap: 20px; }
+
+.hero-stats {
+  display: flex; gap: 48px;
+  opacity: 0; animation: fadeUp .9s .85s forwards;
+  padding-top: 56px; border-top: 1px solid var(--border);
+  margin-top: 56px;
+}
+.h-stat-num {
+  font-family: var(--serif); font-size: 36px; font-weight: 800;
+  letter-spacing: -.03em; color: var(--accent); line-height: 1;
+  margin-bottom: 4px;
+}
+.h-stat-label { font-size: 12px; color: var(--dim); letter-spacing: .04em; }
+
+.btn-primary {
+  background: var(--accent); color: var(--black);
+  padding: 15px 34px; border-radius: 100px;
+  font-family: var(--sans); font-size: 14px; font-weight: 600;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 10px;
+  transition: all .25s; border: none; cursor: pointer;
+}
+.btn-primary:hover { background: var(--cream); transform: translateY(-2px); }
+.btn-primary svg { transition: transform .2s; }
+.btn-primary:hover svg { transform: translate(3px,-3px); }
+
+.btn-ghost {
+  color: var(--dim); font-size: 14px; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: color .2s; cursor: pointer;
+}
+.btn-ghost:hover { color: var(--white); }
+
+.hero-scroll {
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  opacity: 0; animation: fadeIn 1s 1.4s forwards;
+}
+.scroll-line {
+  width: 1px; height: 50px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  animation: scrollLine 2s infinite;
+}
+@keyframes scrollLine {
+  0%  { transform:scaleY(0); transform-origin:top; }
+  50% { transform:scaleY(1); transform-origin:top; }
+  51% { transform:scaleY(1); transform-origin:bottom; }
+  100%{ transform:scaleY(0); transform-origin:bottom; }
+}
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+/* ── MARQUEE ── */
+.marquee-wrap {
+  overflow: hidden; padding: 18px 0;
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  background: rgba(200,245,66,.03);
+}
+.marquee-track { display: flex; animation: marquee 22s linear infinite; width: max-content; }
+.marquee-item {
+  display: flex; align-items: center; gap: 32px; padding: 0 32px;
+  font-family: var(--serif); font-size: 12px; font-weight: 300;
+  letter-spacing: .15em; text-transform: uppercase; color: var(--dim); white-space: nowrap;
+}
+.marquee-dot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* ── SECTION COMMONS ── */
+section { padding: 120px 48px; border-bottom: 1px solid var(--border); }
+.section-label {
+  font-size: 11px; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--accent); font-weight: 600; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-label::before { content:''; width:24px; height:1px; background:var(--accent); display:block; }
+.section-title {
+  font-family: var(--serif); font-size: clamp(34px,5vw,62px);
+  font-weight: 600; letter-spacing: -.03em; line-height: 1.05;
+}
+.sec-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 72px; }
+
+/* ── WORKS ── */
+.works-list { display: flex; flex-direction: column; gap: 3px; }
+.work-row {
+  display: grid;
+  grid-template-columns: 56px 1fr 280px 160px 180px;
+  align-items: center; gap: 24px;
+  padding: 28px 32px;
+  border-radius: 16px;
+  text-decoration: none; color: var(--white);
+  cursor: pointer;
+  background-image: linear-gradient(rgba(255,255,255,.02),rgba(255,255,255,.02)),
+    linear-gradient(120deg, rgba(200,245,66,0) 0%, rgba(200,245,66,.2) 50%, rgba(200,245,66,0) 100%);
+  background-origin:border-box; background-clip:padding-box,border-box;
+  background-size:100% 100%, 300% 100%; border:1px solid transparent;
+  opacity:0; transform:translateY(20px);
+  transition:opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1),
+             border-color .3s, background .3s, box-shadow .3s;
+}
+.work-row.visible { opacity:1; transform:none; }
+.work-row:hover { background-position:0 0,100% 0; box-shadow:0 14px 48px rgba(0,0,0,.5); transform: translateX(8px); }
+.work-row:hover .work-num { color:var(--accent); }
+.work-num  { font-family: var(--serif); font-size: 12px; font-weight: 300; color: var(--dim); letter-spacing:.05em; }
+.work-name { font-family: var(--serif); font-size: 20px; font-weight: 600; letter-spacing: -.02em; transition: color .2s; }
+.work-row:hover .work-name { color: var(--accent); }
+.work-desc { font-size: 13px; color: var(--dim); line-height: 1.65; }
+.work-tag  {
+  font-size: 11px; font-weight: 600; letter-spacing:.06em; text-transform:uppercase;
+  color: var(--dim); background: rgba(255,255,255,.05);
+  padding: 6px 14px; border-radius: 100px; white-space: nowrap;
+  border: 1px solid var(--border); justify-self: start;
+}
+.work-link {
+  font-size: 13px; color: var(--accent); display: flex; align-items: center;
+  gap: 6px; justify-self: end; white-space: nowrap; font-weight: 500;
+}
+.work-arrow { transition: transform .2s; }
+.work-row:hover .work-arrow { transform: translate(3px,-3px); }
+
+/* ── SERVICES ── */
+.services-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  margin-top: 0; border: 2px solid var(--border); border-radius: 24px; overflow: hidden;
+}
+.service-item {
+  padding: 52px; background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.04);
+  cursor: default; position: relative; overflow: hidden;
+  opacity:0; transform:translateY(24px) scale(.98);
+  transition:opacity .65s cubic-bezier(.22,1,.36,1), transform .65s cubic-bezier(.22,1,.36,1), background .35s, border-color .3s;
+}
+.service-item::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(135deg, rgba(200,245,66,.05), transparent);
+  opacity: 0; transition: opacity .35s;
+}
+.service-item.visible { opacity:1; transform:none; }
+.service-item:hover { background: rgba(200,245,66,.04); }
+.service-item:hover::after { opacity: 1; }
+.service-num { font-family:var(--serif); font-size:11px; font-weight:300; color:var(--dim); letter-spacing:.1em; margin-bottom:32px; }
+.service-icon {
+  width:48px; height:48px; background:rgba(200,245,66,.1); border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:24px; font-size:22px; transition: all .3s;
+}
+.service-item:hover .service-icon { background:rgba(200,245,66,.2); transform:scale(1.1) rotate(-5deg); }
+.service-name {
+  font-family:var(--serif); font-size:20px; font-weight:600;
+  letter-spacing:-.02em; margin-bottom:12px; color:var(--white); transition:color .2s;
+}
+.service-item:hover .service-name { color:var(--accent); }
+.service-desc { font-size:14px; color:var(--dim); line-height:1.7; }
+
+/* ── WHY ── */
+.why-layout { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:start; }
+.why-left .section-title { margin-top:20px; margin-bottom:32px; }
+.why-left p { color:var(--dim); font-size:15px; line-height:1.8; margin-bottom:48px; }
+.stats-row { display:flex; gap:40px; margin-bottom:48px; }
+.stat-num {
+  font-family:var(--serif); font-size:48px; font-weight:800;
+  letter-spacing:-.04em; color:var(--accent); line-height:1;
+  transition:color .15s; display:inline-block;
+}
+.stat-label { font-size:13px; color:var(--dim); margin-top:4px; }
+.why-list { list-style:none; display:flex; flex-direction:column; }
+.why-item {
+  display:flex; align-items:flex-start; gap:24px;
+  padding:24px 0; border-bottom:1px solid var(--border);
+  cursor:default;
+  opacity:0; transform:translateX(20px);
+  transition:opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1), padding .25s;
+}
+.why-item:first-child { border-top:1px solid var(--border); }
+.why-item:hover { padding-left:14px; }
+.why-item.why-visible { opacity:1; transform:none; }
+.why-arrow {
+  width:32px; height:32px; border-radius:50%;
+  border:1px solid rgba(200,245,66,.3);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; margin-top:2px; transition:all .25s;
+}
+.why-item:hover .why-arrow { background:var(--accent); border-color:var(--accent); }
+.why-arrow svg { width:14px; height:14px; color:var(--accent); }
+.why-item:hover .why-arrow svg { color:var(--black); }
+.why-text strong { display:block; font-size:16px; font-weight:600; color:var(--white); margin-bottom:4px; }
+.why-text span { font-size:14px; color:var(--dim); line-height:1.65; }
+
+/* ── PROCESS ── */
+#process { background: rgba(255,255,255,.015); }
+.process-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; margin-top:72px; }
+.process-step {
+  padding:48px 40px; background:var(--black); cursor:default;
+  position:relative; overflow:hidden;
+  opacity:0; transform:translateY(28px);
+  transition:opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1), background .3s;
+}
+.process-step::before {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+  background:var(--accent); transform:scaleX(0); transform-origin:left;
+  transition:transform .4s;
+}
+.process-step:hover::before { transform:scaleX(1); }
+.process-step:hover { background:rgba(200,245,66,.04); }
+.process-step.proc-visible { opacity:1; transform:none; }
+.process-step.proc-visible .step-num { animation:numReveal .5s .15s cubic-bezier(.22,1,.36,1) both; }
+@keyframes numReveal { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+.step-num {
+  font-family:var(--serif); font-size:72px; font-weight:800;
+  color:transparent; -webkit-text-stroke:1px rgba(200,245,66,.15);
+  letter-spacing:-.05em; line-height:1; margin-bottom:32px; transition:all .3s;
+}
+.process-step:hover .step-num { -webkit-text-stroke:1px rgba(200,245,66,.5); }
+.step-title { font-family:var(--serif); font-size:18px; font-weight:600; letter-spacing:-.02em; margin-bottom:12px; }
+.step-desc { font-size:14px; color:var(--dim); line-height:1.7; }
+
+/* ── CONTACT ── */
+#contact {
+  background: var(--white); color:var(--black);
+  text-align:center; padding:140px 48px; position:relative; overflow:hidden;
+  border-bottom: none;
+}
+#contact::before {
+  content:'AIM'; position:absolute;
+  font-family:var(--serif); font-size:clamp(180px,28vw,380px); font-weight:800;
+  color:transparent; -webkit-text-stroke:1px rgba(0,0,0,.05);
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  pointer-events:none; letter-spacing:-.05em; white-space:nowrap;
+}
+#contact .section-label { justify-content:center; color:#999; }
+#contact .section-label::before { background:#999; }
+#contact .section-title { color:var(--black); max-width:680px; margin:0 auto 16px; }
+.contact-desc { font-size:16px; color:#777; max-width:440px; margin:0 auto 56px; line-height:1.75; position:relative; }
+.contact-form {
+  display:flex; flex-direction:column; align-items:center;
+  gap:14px; max-width:460px; margin:0 auto; position:relative;
+}
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; width:100%; }
+.form-input {
+  width:100%; padding:16px 20px;
+  background:rgba(0,0,0,.05); border:1.5px solid transparent;
+  border-radius:12px; font-family:var(--sans); font-size:15px; color:var(--black);
+  outline:none; transition:all .2s;
+}
+.form-input::placeholder { color:#aaa; }
+.form-input:focus { border-color:var(--black); background:rgba(0,0,0,.03); }
+.form-submit {
+  width:100%; padding:18px; background:var(--black); color:var(--white);
+  border:none; border-radius:12px; font-family:var(--sans); font-size:15px; font-weight:600;
+  cursor:pointer; transition:all .25s;
+}
+.form-submit:hover { background:#222; transform:translateY(-1px); }
+.contact-links { display:flex; justify-content:center; gap:28px; margin-top:44px; position:relative; flex-wrap:wrap; }
+.contact-link {
+  display:flex; align-items:center; gap:8px; padding:10px 20px;
+  border-radius:100px; border:1.5px solid rgba(0,0,0,.12);
+  font-size:14px; color:#555; text-decoration:none; transition:all .2s;
+}
+.contact-link:hover { background:var(--black); color:var(--white); border-color:var(--black); }
+.contact-link svg { width:16px; height:16px; }
+
+/* ── FOOTER ── */
+footer {
+  border-top:1px solid var(--border); padding:36px 48px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.footer-copy { font-size:13px; color:var(--dim); }
+.footer-tagline { font-family:var(--serif); font-size:12px; color:var(--dim); font-weight:300; letter-spacing:.05em; font-style:italic; }
+
+/* ── REVEAL ── */
+.reveal { opacity:0; transform:translateY(36px); transition:opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1); }
+.reveal.visible { opacity:1; transform:none; }
+.reveal-left  { opacity:0; transform:translateX(-44px); transition:opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1); }
+.reveal-left.visible { opacity:1; transform:none; }
+.reveal-right { opacity:0; transform:translateX(44px);  transition:opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1); }
+.reveal-right.visible { opacity:1; transform:none; }
+.delay-1{transition-delay:.1s} .delay-2{transition-delay:.2s} .delay-3{transition-delay:.3s} .delay-4{transition-delay:.4s}
+
+/* ── Scroll progress bar ── */
+#scroll-bar { position:fixed; top:0; left:0; height:2px; background:var(--accent);
+  z-index:9997; width:0%; box-shadow:0 0 10px rgba(200,245,66,.5); pointer-events:none; }
+
+/* ── Section label line draw ── */
+.section-label::before { transform:scaleX(0); transform-origin:left;
+  transition:transform .7s .25s cubic-bezier(.22,1,.36,1); }
+.section-label.line-in::before { transform:scaleX(1); }
+
+/* ── Hero title word animation ── */
+.hero-word { display:inline-block; opacity:0; transform:translateY(28px);
+  animation:wordIn .75s cubic-bezier(.22,1,.36,1) forwards; }
+@keyframes wordIn { to{opacity:1;transform:none} }
+
+/* ── MOBILE ── */
+/* Бургер показывается при ширине меньше 900px */
+@media(max-width:900px){
+  nav { padding: 14px 20px; }
+  .nav-links { display: none !important; }
+  .nav-burger { display: flex !important; }
+
+  section { padding: 64px 18px; }
+  .hero { padding: 0 18px 64px; min-height: 100svh; }
+  .hero-title { font-size: clamp(36px, 10vw, 64px); }
+  .hero-bottom { flex-direction: column; align-items: flex-start; gap: 28px; }
+  .hero-actions { flex-direction: column; align-items: stretch; gap: 14px; width: 100%; }
+  .btn-primary { width: 100%; justify-content: center; padding: 16px 28px; font-size: 15px; }
+  .btn-ghost { justify-content: center; }
+  .hero-stats { gap: 16px; flex-wrap: wrap; padding-top: 36px; margin-top: 36px; }
+  .hero-stats .h-stat { flex: 1 1 calc(50% - 8px); min-width: 0; }
+  .h-stat-num { font-size: 26px; }
+  .h-stat-label { font-size: 10px; }
+
+  .sec-header { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 36px; }
+  .section-title { font-size: clamp(26px, 7vw, 44px); }
+
+  .work-row { grid-template-columns: 36px 1fr auto; gap: 10px; padding: 18px 16px; }
+  .work-desc, .work-tag { display: none; }
+  .work-name { font-size: 16px; }
+  .work-link { font-size: 11px; }
+
+  .services-grid { grid-template-columns: 1fr; border-radius: 16px; }
+  .service-item { padding: 28px 20px; }
+  .service-name { font-size: 17px; }
+
+  .why-layout { grid-template-columns: 1fr; gap: 36px; }
+  .stats-row { gap: 20px; flex-wrap: wrap; }
+  .stat-num { font-size: 36px; }
+  .why-left p { margin-bottom: 32px; }
+
+  .process-steps { grid-template-columns: 1fr 1fr; gap: 2px; }
+  .process-step { padding: 28px 20px; }
+  .step-num { font-size: 44px; margin-bottom: 20px; }
+  .step-title { font-size: 14px; }
+  .step-desc { font-size: 13px; }
+
+  #contact { padding: 72px 18px; }
+  #contact::before { display: none; }
+  .contact-links { flex-direction: column; align-items: center; gap: 10px; }
+  .form-row { grid-template-columns: 1fr; }
+  .contact-form { padding: 0; }
+  .contact-desc { margin-bottom: 36px; }
+
+  footer { flex-direction: column; gap: 10px; text-align: center; padding: 24px 18px; }
+  .footer-tagline { display: none; }
+}
+
+@media(max-width:480px){
+  .process-steps { grid-template-columns: 1fr; }
+  .hero-stats .h-stat { flex: 1 1 calc(50% - 8px); }
+}
+</style>
+</head>
+<body>
+
+<div id="scroll-bar"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="logo">AIM<span>.</span>Studio</a>
+  <ul class="nav-links">
+    <li><a href="#works">Кейсы</a></li>
+    <li><a href="#services">Услуги</a></li>
+    <li><a href="#why">О нас</a></li>
+    <li><a href="#process">Процесс</a></li>
+    <li><a href="#contact" class="nav-cta">Обсудить проект</a></li>
+  </ul>
+  <button class="nav-burger" id="navBurger" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#works">Кейсы</a>
+  <a href="#services">Услуги</a>
+  <a href="#why">О нас</a>
+  <a href="#process">Процесс</a>
+  <a href="#contact" class="mobile-cta">Обсудить проект</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <div class="hero-bg-circle"></div>
+    <div class="hero-bg-circle"></div>
+  </div>
+  <div class="hero-badge">Принимаем проекты</div>
+  <h1 class="hero-title">
+    Цифровые<br>
+    <em>решения</em><br>
+    для бизнеса
+  </h1>
+  <div class="hero-bottom">
+    <p class="hero-desc">Разрабатываем сайты, веб-приложения и IT-сервисы — функционально, современно, стабильно.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">
+        Начать проект
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 13L13 3M13 3H6M13 3V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </a>
+      <a href="#works" class="btn-ghost">
+        Наши работы
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="h-stat">
+      <div class="h-stat-num" data-count="3">0</div>
+      <div class="h-stat-label">Проекта в портфолио</div>
+    </div>
+    <div class="h-stat">
+      <div class="h-stat-num" data-count="6">0</div>
+      <div class="h-stat-label">Направлений услуг</div>
+    </div>
+    <div class="h-stat">
+      <div class="h-stat-num" data-count="100" data-suffix="%">0</div>
+      <div class="h-stat-label">Проектов сданы в срок</div>
+    </div>
+    <div class="h-stat">
+      <div class="h-stat-num" data-count="24" data-suffix="ч">0</div>
+      <div class="h-stat-label">Время первого ответа</div>
+    </div>
+  </div>
+  <div class="hero-scroll"><div class="scroll-line"></div></div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><span>Разработка сайтов</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>Веб-приложения</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>Мобильные приложения</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>UI/UX дизайн</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>Автоматизация</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>IT-консалтинг</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>Техподдержка</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>Цифровизация</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>Разработка сайтов</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>Веб-приложения</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>Мобильные приложения</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>UI/UX дизайн</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>Автоматизация</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>IT-консалтинг</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>Техподдержка</span><div class="marquee-dot"></div></div>
+    <div class="marquee-item"><span>Цифровизация</span><div class="marquee-dot"></div></div>
+  </div>
+</div>
+
+<!-- WORKS -->
+<section id="works">
+  <div class="sec-header reveal">
+    <div>
+      <div class="section-label">Портфолио</div>
+      <h2 class="section-title">Наши проекты</h2>
+    </div>
+    <a href="#contact" class="btn-ghost" style="font-size:13px;">Обсудить ваш →</a>
+  </div>
+  <div class="works-list">
+    <a class="work-row" href="https://ustazon.com/" target="_blank">
+      <div class="work-num">01</div>
+      <div class="work-name">UstazOn</div>
+      <div class="work-desc">Образовательная платформа для изучения Python с нуля — видеоуроки, задачи с решениями и онлайн-занятия с преподавателем</div>
+      <div class="work-tag">EdTech · Веб-приложение</div>
+      <div class="work-link">ustazon.com <svg class="work-arrow" width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 11L11 2M11 2H4.5M11 2V8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </a>
+    <a class="work-row" href="https://fenixinternationalcompany.kz/" target="_blank">
+      <div class="work-num">02</div>
+      <div class="work-name">Fenix International</div>
+      <div class="work-desc">Корпоративный сайт международной компании — презентация услуг, направлений деятельности и команды специалистов</div>
+      <div class="work-tag">Корпоративный сайт</div>
+      <div class="work-link">fenixinternationalcompany.kz <svg class="work-arrow" width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 11L11 2M11 2H4.5M11 2V8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </a>
+    <a class="work-row" href="https://python-django.kz/" target="_blank">
+      <div class="work-num">03</div>
+      <div class="work-name">Python-Django.kz</div>
+      <div class="work-desc">Образовательный портал с интерактивным обучением Python прямо в браузере — курсы, задачи и онлайн-редактор кода</div>
+      <div class="work-tag">EdTech · Обучающий портал</div>
+      <div class="work-link">python-django.kz <svg class="work-arrow" width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 11L11 2M11 2H4.5M11 2V8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    </a>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-label reveal">Что мы делаем</div>
+  <h2 class="section-title reveal delay-1">Полный спектр<br>цифровых услуг</h2>
+  <div class="services-grid" style="margin-top:56px;">
+    <div class="service-item">
+      <div class="service-num">01</div>
+      <div class="service-icon">🌐</div>
+      <div class="service-name">Разработка сайтов</div>
+      <div class="service-desc">От лендингов до корпоративных порталов любой сложности. Современный стек, быстрая загрузка, мобильная адаптация.</div>
+    </div>
+    <div class="service-item">
+      <div class="service-num">02</div>
+      <div class="service-icon">⚡</div>
+      <div class="service-name">Веб-приложения</div>
+      <div class="service-desc">Сложные SPA, платформы, личные кабинеты и B2B-системы. Проектируем архитектуру, которая работает под нагрузкой.</div>
+    </div>
+    <div class="service-item">
+      <div class="service-num">03</div>
+      <div class="service-icon">📱</div>
+      <div class="service-name">Мобильные приложения</div>
+      <div class="service-desc">iOS и Android под ключ. Нативная или кросс-платформенная разработка в зависимости от задачи.</div>
+    </div>
+    <div class="service-item">
+      <div class="service-num">04</div>
+      <div class="service-icon">🎨</div>
+      <div class="service-name">UI/UX дизайн</div>
+      <div class="service-desc">Интерфейсы, которые нравятся пользователям. Прототипирование, пользовательский опыт, дизайн-системы.</div>
+    </div>
+    <div class="service-item">
+      <div class="service-num">05</div>
+      <div class="service-icon">🤖</div>
+      <div class="service-name">Автоматизация процессов</div>
+      <div class="service-desc">Интеграции, боты, CRM, ERP — освобождаем команду от рутины и подключаем системы между собой.</div>
+    </div>
+    <div class="service-item">
+      <div class="service-num">06</div>
+      <div class="service-icon">🛠</div>
+      <div class="service-name">Поддержка и консалтинг</div>
+      <div class="service-desc">Сопровождение после запуска, техническая поддержка, консультации по IT-стратегии и цифровизации бизнеса.</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="why-layout">
+    <div class="why-left reveal-left">
+      <div class="section-label">Почему AIM</div>
+      <h2 class="section-title">Мы работаем<br>на результат</h2>
+      <p>Студия цифровых решений без лишних слов. Каждый проект — это анализ задачи, точное техническое решение и рабочий продукт на выходе.</p>
+      <div class="stats-row">
+        <div class="stat-block">
+          <div class="stat-num counter" data-count="3">0</div>
+          <div class="stat-label">Проекта сдано</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num counter" data-count="100" data-suffix="%">0</div>
+          <div class="stat-label">Клиентов возвращаются</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num counter" data-count="2" data-suffix="х">0</div>
+          <div class="stat-label">Быстрее конкурентов</div>
+        </div>
+      </div>
+    </div>
+    <div class="why-right reveal-right">
+      <ul class="why-list">
+        <li class="why-item">
+          <div class="why-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+          <div class="why-text"><strong>Индивидуальный подход</strong><span>Нет шаблонных решений. Изучаем задачу и подбираем технологии под конкретный бизнес.</span></div>
+        </li>
+        <li class="why-item">
+          <div class="why-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+          <div class="why-text"><strong>Понимание бизнеса</strong><span>Думаем как предприниматели. Задаём правильные вопросы и решаем задачи, а не рисуем пиксели.</span></div>
+        </li>
+        <li class="why-item">
+          <div class="why-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+          <div class="why-text"><strong>Современный стек</strong><span>Используем актуальные инструменты и проверенные технологии без устаревших решений.</span></div>
+        </li>
+        <li class="why-item">
+          <div class="why-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+          <div class="why-text"><strong>Чёткие сроки</strong><span>Договариваемся о дедлайнах и держим их. Прозрачная коммуникация на всех этапах.</span></div>
+        </li>
+        <li class="why-item">
+          <div class="why-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+          <div class="why-text"><strong>Поддержка после запуска</strong><span>Не исчезаем после сдачи проекта. Обслуживаем, дорабатываем, сопровождаем.</span></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="section-label reveal">Как мы работаем</div>
+  <h2 class="section-title reveal delay-1">Наш процесс</h2>
+  <div class="process-steps" style="margin-top:72px;">
+    <div class="process-step">
+      <div class="step-num">01</div>
+      <div class="step-title">Анализ задачи</div>
+      <div class="step-desc">Погружаемся в бизнес, изучаем аудиторию и конкурентов. Формулируем чёткое техническое задание.</div>
+    </div>
+    <div class="process-step">
+      <div class="step-num">02</div>
+      <div class="step-title">Проектирование</div>
+      <div class="step-desc">Разрабатываем архитектуру решения, прототипы и дизайн. Согласовываем на каждом шаге.</div>
+    </div>
+    <div class="process-step">
+      <div class="step-num">03</div>
+      <div class="step-title">Разработка</div>
+      <div class="step-desc">Пишем код, настраиваем инфраструктуру, проводим тестирование. Результат — стабильный продукт.</div>
+    </div>
+    <div class="process-step">
+      <div class="step-num">04</div>
+      <div class="step-title">Запуск и сопровождение</div>
+      <div class="step-desc">Выводим проект в продакшн и остаёмся рядом. Обновления, поддержка, развитие продукта.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">Начать проект</div>
+  <h2 class="section-title reveal delay-1">Есть идея?<br>Давайте её реализуем</h2>
+  <p class="contact-desc reveal delay-2">Оставьте заявку — мы свяжемся в течение рабочего дня и обсудим вашу задачу.</p>
+  <form class="contact-form reveal delay-2" onsubmit="handleSubmit(event)">
+    <div class="form-row">
+      <input class="form-input" type="text" placeholder="Ваше имя" required>
+      <input class="form-input" type="tel" placeholder="Телефон или Telegram">
+    </div>
+    <input class="form-input" type="email" placeholder="Email" required>
+    <input class="form-input" type="text" placeholder="Расскажите о проекте">
+    <button type="submit" class="form-submit">Отправить заявку →</button>
+  </form>
+  <div class="contact-links reveal delay-3">
+    <a href="https://t.me/aimstudio" class="contact-link" target="_blank">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.247l-1.97 9.289c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.932z"/></svg>
+      Telegram
+    </a>
+    <a href="https://wa.me/77000000000" class="contact-link" target="_blank">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp
+    </a>
+    <a href="mailto:hello@aimstudio.kz" class="contact-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+      hello@aimstudio.kz
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="logo">AIM<span style="color:var(--accent)">.</span>Studio</a>
+  <span class="footer-tagline">практичные IT-решения без лишнего шума</span>
+  <span class="footer-copy">© 2025 AIM Studio</span>
+</footer>
+
+<script>
+// ══ HAMBURGER MENU ══
+const burger = document.getElementById('navBurger');
+const mobileMenu = document.getElementById('mobileMenu');
+const navLinks = document.querySelector('.nav-links');
+
+function closeMobileMenu() {
+  burger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// При ресайзе — если стало широко, закрыть меню
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 900) closeMobileMenu();
+}, { passive: true });
+
+burger.addEventListener('click', () => {
+  const isOpen = mobileMenu.classList.toggle('open');
+  burger.classList.toggle('open', isOpen);
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+});
+
+mobileMenu.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', closeMobileMenu);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeMobileMenu();
+});
+
+// ══ SCROLL REVEAL ══
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -32px 0px' });
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => obs.observe(el));
+
+// ══ STAGGER service items ══
+const svcObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.service-item').forEach((item, i) => {
+        item.style.transitionDelay = (i * 0.08) + 's';
+        item.classList.add('visible');
+      });
+      svcObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.05 });
+const grid = document.querySelector('.services-grid');
+if (grid) svcObs.observe(grid);
+
+// ══ STAGGER work rows ══
+const workObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.work-row').forEach((row, i) => {
+        setTimeout(() => row.classList.add('visible'), i * 100);
+      });
+      workObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.05 });
+const workList = document.querySelector('.works-list');
+if (workList) workObs.observe(workList);
+
+// ══ STAGGER why-items ══
+const whyObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.why-item').forEach((item, i) => {
+        setTimeout(() => item.classList.add('why-visible'), i * 90);
+      });
+      whyObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+const whyList = document.querySelector('.why-list');
+if (whyList) whyObs.observe(whyList);
+
+// ══ PROCESS steps ══
+const procObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.process-step').forEach((step, i) => {
+        setTimeout(() => step.classList.add('proc-visible'), i * 120);
+      });
+      procObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+const procSteps = document.querySelector('.process-steps');
+if (procSteps) procObs.observe(procSteps);
+
+// ══ NAV scroll ══
+let lastY = 0;
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  nav.style.borderBottomColor = y > 40 ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.07)';
+  nav.style.opacity = (y > lastY + 80 && y > 200) ? '0.85' : '1';
+  lastY = y;
+}, { passive: true });
+
+// ══ PARALLAX orbs ══
+const orbs = document.querySelectorAll('.hero-bg-circle');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  if (orbs[0]) orbs[0].style.transform = `translateY(${y * .12}px)`;
+  if (orbs[1]) orbs[1].style.transform = `translateY(${-y * .08}px)`;
+}, { passive: true });
+
+// ══ COUNT-UP ══
+function animCount(el) {
+  const target = parseInt(el.dataset.count);
+  const suffix = el.dataset.suffix || '';
+  const dur = 1600, start = performance.now();
+  function ease(t){ return 1-Math.pow(1-t,3); }
+  (function tick(now){
+    const t = Math.min((now-start)/dur, 1);
+    el.textContent = Math.floor(ease(t)*target) + suffix;
+    if(t < 1) requestAnimationFrame(tick);
+    else {
+      el.textContent = target + suffix;
+      el.style.transition = 'color .15s';
+      el.style.color = '#fff';
+      setTimeout(() => { el.style.color = ''; el.style.transition = ''; }, 150);
+    }
+  })(start);
+}
+const cObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { animCount(e.target); cObs.unobserve(e.target); }
+  });
+}, { threshold: 0.6 });
+document.querySelectorAll('[data-count]').forEach(el => cObs.observe(el));
+
+// ══ TILT service cards ══
+document.querySelectorAll('.service-item').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width  - .5;
+    const y = (e.clientY - r.top)  / r.height - .5;
+    card.style.transform = `perspective(600px) rotateY(${x*6}deg) rotateX(${-y*6}deg) scale(1.02)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+    card.style.transition = 'transform .5s cubic-bezier(.23,1,.32,1), background .35s';
+    setTimeout(() => card.style.transition = '', 500);
+  });
+});
+
+// ══ FORM ══
+function handleSubmit(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('.form-submit');
+  btn.style.transform = 'scale(1.02)';
+  setTimeout(() => btn.style.transform = '', 120);
+  btn.textContent = '✓ Заявка отправлена!';
+  btn.style.background = '#1e1e1e';
+  btn.style.color = 'var(--accent)';
+  setTimeout(() => {
+    btn.textContent = 'Отправить заявку →';
+    btn.style.background = '';
+    btn.style.color = '';
+    e.target.reset();
+  }, 3000);
+}
+
+// ══ SCROLL PROGRESS ══
+const scrollBar = document.getElementById('scroll-bar');
+window.addEventListener('scroll', () => {
+  const max = document.body.scrollHeight - window.innerHeight;
+  scrollBar.style.width = (window.scrollY / max * 100) + '%';
+}, { passive: true });
+
+// ══ SECTION LABEL line ══
+document.querySelectorAll('.section-label').forEach(label => {
+  const labelObs = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { label.classList.add('line-in'); labelObs.disconnect(); }
+  }, { threshold: 0.5 });
+  labelObs.observe(label);
+});
+
+// ══ HERO TITLE split ══
+(function splitHero() {
+  const title = document.querySelector('.hero-title');
+  if (!title) return;
+  const lines = title.innerHTML.split('<br>');
+  title.innerHTML = lines.map((line, li) =>
+    line.trim().split(' ').map((word, wi) => {
+      const delay = (li * 3 + wi) * 0.12 + 0.3;
+      return `<span class="hero-word" style="animation-delay:${delay}s">${word}</span>`;
+    }).join(' ')
+  ).join('<br>');
+})();
+</script>
+</body>
+</html>
